@@ -7,6 +7,7 @@
   },
   "scripts": {
     "cy:open": "cypress open",
+    "performance-problems": "cypress run --spec cypress/e2e/performance_problems",
     "nerdearla": "cypress run --spec cypress/e2e/nerdearla",
     "home": "cypress run --spec cypress/e2e/nerdearla/home.cy.js",
     "purchase": "cypress run --spec cypress/e2e/nerdearla/purchase.cy.js",
