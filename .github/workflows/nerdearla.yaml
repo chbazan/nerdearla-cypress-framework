@@ -156,14 +156,17 @@ jobs:
       - name: Run metrics alert script
         if: success()
         run: |
-          ALERTS=$(python alerta_metricas.py | tr -d '\r' | xargs)
+          # Ejecutamos el script y capturamos solo la salida relevante
+          ALERTS=$(python alerta_metricas.py | grep -v "ALERT_METRICS" | grep -v "EOF" | xargs)
 
+          # Si está vacío o dice "No alerts", ponemos mensaje fijo
           if [ -z "$ALERTS" ] || [ "$ALERTS" = "No alerts" ]; then
             ALERT_MSG=":warning: Metrics Alert: No Alerts"
           else
             ALERT_MSG=":warning: Metrics Alert! $ALERTS"
           fi
 
+          # Guardamos en GitHub ENV
           echo "ALERT_MSG=$ALERT_MSG" >> $GITHUB_ENV
 
       - name: Upload csv generated metrics
