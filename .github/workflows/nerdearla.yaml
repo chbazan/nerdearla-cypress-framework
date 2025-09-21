@@ -154,15 +154,20 @@ jobs:
         run: python comparativa_performance.py
 
       - name: Run metrics alert script
-        if: success()
         id: check_metrics
+        if: success()
         env:
           VERSION: ${{ env.VERSION }}
           ENVIRONMENT: ${{ env.ENVIRONMENT }}
           CLIENT: ${{ env.CLIENT }}
           COMMENTS: ${{ env.COMMENTS }}
         run: |
-          python alerta_metricas.py
+          ALERTS=$(python alerta_metricas.py)
+          # Si no hay alertas, forzamos "No alerts"
+          if [ -z "$ALERTS" ]; then
+            ALERTS="No alerts"
+          fi
+          echo "ALERT_METRICS=$ALERTS" >> $GITHUB_OUTPUT
 
       - name: Upload csv generated metrics
         uses: actions/upload-artifact@v4
@@ -446,29 +451,24 @@ jobs:
           SLACK_ICON_EMOJI: ':warning:'
       
       - name: Build Slack message
-        id: slack_message
         if: success()
         shell: bash
         run: |
-          # Trim para eliminar saltos de línea o espacios
           ALERT_MSG="$(echo '${{ steps.check_metrics.outputs.ALERT_METRICS }}' | xargs)"
-
-          # Solo agregamos bloque de alerta si ALERT_MSG no es "Sin alertas"
-          if [ "$ALERT_MSG" != "Sin alertas" ]; then
-            ALERT_MSG="*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10% en esta corrida:\n\`\`\`\n$ALERT_MSG\n\`\`\`"
+          if [ "$ALERT_MSG" != "No alerts" ]; then
+            ALERT_MSG="*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10%:\n\`\`\`\n$ALERT_MSG\n\`\`\`"
           else
             ALERT_MSG=""
           fi
 
-          # Creamos mensaje completo
-          cat <<EOF > slack_message.txt
+          SLACK_MESSAGE=$(cat <<EOF
           *:cypress_logo: Nerdearla :nerdearla_logo:*
 
           *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
-          *Environment:* \`${{ env.ENVIRONMENT }}\`
-          *Client:* \`${{ env.CLIENT }}\`
-          *Version:* \`${{ env.VERSION }}\`
-          *Browser:* \`${{ env.BROWSER }}\`
+          *Environment:* ${{ env.ENVIRONMENT }}
+          *Client:* ${{ env.CLIENT }}
+          *Version:* ${{ env.VERSION }}
+          *Browser:* ${{ env.BROWSER }}
 
           $ALERT_MSG
 
@@ -481,15 +481,11 @@ jobs:
           [Comparative Metrics](https://github.com/chbazan/${{ env.PUBLIC_REPO }}/tree/metrics/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.VERSION }})
           [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})
           EOF
+          )
 
-          # Exportamos variable para el siguiente step
-          SLACK_MSG=$(cat slack_message.txt)
-          echo "SLACK_MESSAGE<<EOF" >> $GITHUB_ENV
-          echo "$SLACK_MSG" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "SLACK_MESSAGE=$SLACK_MESSAGE" >> $GITHUB_ENV
 
-
-      - name: Send Slack Notification on success
+      - name: Notify Slack on Success
         if: success()
         uses: rtCamp/action-slack-notify@v2
         env:
@@ -499,3 +495,4 @@ jobs:
           SLACK_MESSAGE: ${{ env.SLACK_MESSAGE }}
           SLACK_USERNAME: 'GitHub Actions'
           SLACK_ICON_EMOJI: ':white_check_mark:'
+
