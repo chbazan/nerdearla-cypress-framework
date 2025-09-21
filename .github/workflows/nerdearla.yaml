@@ -1,0 +1,466 @@
+name: Nerdearla
+
+on:
+  workflow_dispatch:
+    inputs:
+      Environment:
+        description: 'Environment to run the tests'
+        required: true
+        default: 'Production'
+        type: choice
+        options:
+          - Production
+          - Testing
+      Client:
+        description: 'Client to run the tests'
+        required: true
+        default: 'Nerdearla'
+        type: choice
+        options:
+          - Nerdearla
+          - Otro cliente
+      Test:
+        description: 'Test suite to run'
+        required: true
+        default: 'Metrics'
+        type: choice
+        options:
+          - Metrics
+      Browser:
+        description: 'Browser to use'
+        required: true
+        default: 'electron'
+        type: choice
+        options:
+          - chrome
+          - electron
+          - firefox
+      RunAllSpecs:
+        description: 'Run all tests in scope'
+        required: true
+        type: boolean
+        default: true
+      RunSpecificSpec:
+        description: 'Run a specific test'
+        required: false
+        type: choice
+        default: false
+        options:
+          - Home
+          - Purchase
+      Comments:
+        description: 'Comments for the metrics'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  cypress-tests:
+    name: Cypress Run
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: metrics
+
+      - name: Configure environment
+        run: |
+          # === Inputs para todo el job ===
+          echo "ENVIRONMENT=${{ github.event.inputs.Environment }}" >> "$GITHUB_ENV"
+          echo "CLIENT=${{ github.event.inputs.Client }}" >> "$GITHUB_ENV"
+          echo "TEST=${{ github.event.inputs.Test }}" >> "$GITHUB_ENV"
+          echo "BROWSER=${{ github.event.inputs.Browser }}" >> "$GITHUB_ENV"
+          echo "COMMENTS=${{ github.event.inputs.Comments }}" >> "$GITHUB_ENV"
+
+          # === Repositorios para reportes y métricas ===
+          echo "PUBLIC_REPO=nerdearla-cypress-reports" >> "$GITHUB_ENV"
+          echo "PRIVATE_REPO=nerdearla-cypress-framework" >> "$GITHUB_ENV"
+
+          # === URLs según Environment + Client ===
+          case "${{ github.event.inputs.Environment }}-${{ github.event.inputs.Client }}" in
+            Production-Nerdearla)
+              echo "LOCATION=https://www.saucedemo.com/v1/index.html >> "$GITHUB_ENV" # La URL de LOCATION iría cambiando según ambiente y cliente
+              ;;
+            Production-Otro cliente)
+              echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV"
+              ;;
+            Testing-Nerdearla)
+              echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV"
+              ;;
+            Testing-Otro cliente)
+              echo "LOCATION=https://www.saucedemo.com/v1/index.html >> "$GITHUB_ENV"
+              ;;
+          esac
+
+          # === Selección de suite de tests ===
+          # 1) Ejecutar TODO (por default si RunAllSpecs es true)
+          if [[ "${{ github.event.inputs.RunAllSpecs }}" == "true" ]]; then
+            echo "TEST_SUITE=nerdearla" >> "$GITHUB_ENV"
+
+          # 2) Ejecutar un test específico si RunSpecificSpec != false
+          elif [[ "${{ github.event.inputs.RunSpecificSpec }}" != "false" ]]; then
+            case "${{ github.event.inputs.RunSpecificSpec }}" in
+              "Home")          echo "TEST_SUITE=home" >> "$GITHUB_ENV" ;;
+              "Purchase")            echo "TEST_SUITE=purchase" >> "$GITHUB_ENV" ;;
+            esac
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Clean reports and app version
+        run: |
+          rm -f version.txt
+          rm -rf cypress/reports/*
+          
+      - name: Run Tests
+        uses: cypress-io/github-action@v6
+        with:
+          command: npm run ${{ env.TEST_SUITE }} -- --browser ${{ env.BROWSER }}
+        env:
+          TEST_USER: ${{ secrets.TEST_USER }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          LOCATION: ${{ env.LOCATION }}
+
+      - name: Generate combined report
+        if: always()
+        run: npm run report
+
+      - name: Get app version from Cypress
+        if: always()
+        run: |
+          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+          echo "Version: $(cat version.txt)"
+
+      - name: Set up Python
+        if: success()
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Python dependencies
+        if: success()
+        run: pip install pandas
+
+      - name: Run python script
+        if: success()
+        env:
+          VERSION: ${{ env.VERSION }}
+          ENVIRONMENT: ${{ env.ENVIRONMENT }}
+          CLIENT: ${{ env.CLIENT }}
+          COMMENTS: ${{ env.COMMENTS }}
+        run: python comparativa_performance.py
+
+      - name: Upload csv generated metrics
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: Metrics
+          path: metrics/
+
+      - name: Upload Cypress Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cypress Error Screenshots
+          path: cypress/reports/screenshots/**/*.png
+
+      - name: Upload Cypress Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Cypress Test Report
+          path: cypress/reports/index.html
+
+      - name: Upload Json Combined Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Json Combined Results
+          path: cypress/reports/combined.json
+
+      - name: Extract test summary
+        if: always()
+        shell: bash
+        run: |
+          TEST_SUMMARY=$(node -e '
+            const data = require("./cypress/reports/combined.json");
+            const stats = data.stats || {};
+            const passed = stats.passes || 0;
+            const total = stats.tests || 0;
+            const percent = total > 0 ? Math.round((passed / total) * 100) : 0;
+            const durationSec = stats.duration ? (stats.duration / 1000).toFixed(1) : 0;
+            console.log(`${passed}/${total} tests passed (${percent}%) in ${durationSec}s`);
+          ')
+          echo "TEST_SUMMARY<<EOF" >> $GITHUB_ENV
+          echo "$TEST_SUMMARY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "Summary: $TEST_SUMMARY"
+
+      - name: Extract suite metrics
+        if: always()
+        shell: bash
+        run: |
+          SUITE_METRICS=$(node -e '
+            const data = require("./cypress/reports/combined.json");
+            const metrics = [];
+
+            // Toma solo la suite raíz de cada archivo y suma toda su duración recursivamente
+            function totalDuration(suite) {
+              let total = 0;
+              if (Array.isArray(suite.tests)) {
+                total += suite.tests.reduce((t, x) => t + (x.duration || 0), 0);
+              }
+              if (Array.isArray(suite.suites)) {
+                total += suite.suites.reduce((t, s) => t + totalDuration(s), 0);
+              }
+              return total;
+            }
+
+            for (const result of data.results || []) {
+              const top = (result.suites || [])[0];   // suite principal del archivo
+              if (top && top.title) {
+                const dur = totalDuration(top);
+                if (dur > 0) {
+                  metrics.push(`${top.title.trim()}: ${(dur/1000).toFixed(1)}s`);
+                }
+              }
+            }
+
+            console.log(metrics.join(" | "));
+          ')
+          echo "SUITE_METRICS<<EOF" >> $GITHUB_ENV
+          echo "$SUITE_METRICS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "Suite metrics: $SUITE_METRICS"
+
+      - name: Extract titles of all failed tests
+        if: failure()
+        run: |
+          FAILED_TESTS=$(node -e "
+            const data = require('./cypress/reports/combined.json');
+            const failedTests = [];
+            function findFailedTests(suites) {
+              for (const suite of suites || []) {
+                for (const test of suite.tests || []) {
+                  if (test.state === 'failed' && (test.title || '').trim() !== '') {
+                    failedTests.push(test.title.trim());
+                  }
+                }
+                findFailedTests(suite.suites || []);
+              }
+            }
+            for (const result of data.results || []) {
+              findFailedTests(result.suites || []);
+            }
+            console.log(failedTests.join(' | '));
+          ")
+          echo "FAILED_TESTS<<EOF" >> $GITHUB_ENV
+          echo "$FAILED_TESTS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "Failed test titles:"
+          echo "$FAILED_TESTS"
+
+      - name: Collect error messages
+        if: failure()
+        run: |
+          ERROR_MESSAGES=$(node -e "
+            const data = require('./cypress/reports/combined.json');
+            const messages = [];
+            function findErrors(suites) {
+              for (const suite of suites || []) {
+                for (const test of suite.tests || []) {
+                  if (test.state === 'failed' && test.err && test.err.message) {
+                    messages.push(test.err.message);
+                  }
+                }
+                findErrors(suite.suites || []);
+              }
+            }
+            for (const result of data.results || []) {
+              findErrors(result.suites || []);
+            }
+            console.log(messages.join('\n\n'));
+          ")
+          echo "ERROR_MESSAGES<<EOF" >> $GITHUB_ENV
+          echo "$ERROR_MESSAGES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "Error messages:"
+          echo "$ERROR_MESSAGES"
+
+      - name: Extract passed suites
+        if: always()
+        shell: bash
+        run: |
+          PASSED_SUITES=$(node -e '
+            const data = require("./cypress/reports/combined.json");
+            const passed = [];
+            for (const result of data.results || []) {
+              const top = (result.suites || [])[0];
+              if (
+                top &&
+                top.title &&
+                (!top.failures || top.failures.length === 0)
+              ) {
+                passed.push(top.title.trim());
+              }
+            }
+            console.log(passed.join(" | "));
+          ')
+          echo "PASSED_SUITES<<EOF" >> $GITHUB_ENV
+          echo "$PASSED_SUITES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "Passed suite titles: $PASSED_SUITES"
+
+      - name: Extract screenshot folder name
+        if: failure()
+        run: |
+          FOLDER=$(find cypress/reports/screenshots -mindepth 1 -maxdepth 1 -type d | head -n 1 | xargs basename)
+          echo "SCREENSHOT_FOLDER=$FOLDER" >> $GITHUB_ENV
+          echo "Screenshot folder: $FOLDER"
+
+      - name: Extract screenshot name (URL-encoded)
+        if: failure()
+        run: |
+          FILE_PATH=$(find cypress/reports/screenshots -type f -name '*.png' | head -n 1)
+          FILE_NAME=$(basename "$FILE_PATH")
+          FILE_NAME_ENCODED=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1]))" "$FILE_NAME")
+
+          echo "SCREENSHOT_NAME=$FILE_NAME_ENCODED" >> $GITHUB_ENV
+          echo "Screenshot name (encoded): $FILE_NAME_ENCODED"
+
+      - name: Encode test suite for URL
+        if: failure()
+        run: |
+          ENCODED_TEST_SUITE=$(python3 -c "import urllib.parse; print(urllib.parse.quote('${{ env.TEST_SUITE }}'))")
+          echo "ENCODED_TEST_SUITE=$ENCODED_TEST_SUITE" >> $GITHUB_ENV
+
+      - name: Deploy report to gh pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./cypress/reports
+          destination_dir: ${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }}
+          publish_branch: gh-pages
+          external_repository: chbazan/${{ env.PUBLIC_REPO }}
+
+      - name: Deploy metrics to public repository
+        if: success()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./metrics
+          publish_branch: metrics
+          external_repository: chbazan/${{ env.PUBLIC_REPO }}
+
+      - name: Push metrics to metrics branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Ya estamos en metrics gracias a actions/checkout
+          git fetch origin metrics
+          git pull --rebase --autostash origin metrics
+          git add metrics/ version.txt
+          git commit -m "Save new metrics for $ENVIRONMENT/$CLIENT/$VERSION ($(date +'%Y-%m-%d %H:%M'))" || echo "No changes to commit"
+          git push origin metrics
+
+      - name: Calculate Stability of Last 10 Runs
+        if: always()
+        shell: bash
+        run: |
+          echo "Calculating stability of the last 10 runs…"
+
+          # Obtener el ID del workflow a partir del nombre fijo
+          WORKFLOW_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows" \
+            | jq -r '.workflows[] | select(.name=="Nerdearla") | .id')
+
+          if [ -z "$WORKFLOW_ID" ]; then
+            echo "No workflow found with name 'Nerdearla'"
+            echo "STABILITY=❓ No data" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          # Obtener últimas 10 corridas completadas
+          RUNS_JSON=$(curl -s -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/${WORKFLOW_ID}/runs?per_page=10&status=completed")
+
+          # Calcular exitosas y fallidas
+          PASSED=$(echo "$RUNS_JSON" | jq '[.workflow_runs[] | select(.conclusion=="success")] | length')
+          TOTAL=$(echo "$RUNS_JSON" | jq '.workflow_runs | length')
+          FAILED=$((TOTAL - PASSED))
+
+          # Exportar variable de entorno para Slack
+          if [ "$TOTAL" -eq 0 ]; then
+            echo "STABILITY=✅ 0 | ❌ 0 (first run, no history yet)" >> "$GITHUB_ENV"
+          else
+            echo "STABILITY=✅ $PASSED | ❌ $FAILED" >> "$GITHUB_ENV"
+          fi
+
+      - name: Notify Slack on Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.NERDEARLA_SLACK_WEBHOOK }}
+          SLACK_COLOR: '#FF0000'
+          SLACKIFY_MARKDOWN: true
+          SLACK_MESSAGE: |
+
+            *:cypress_logo: Nerdearla :bug: *
+            
+            *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
+            *Environment:* `${{ env.ENVIRONMENT }}`
+            *Client:* `${{ env.CLIENT }}`
+            *Version:* `${{ env.VERSION }}`
+            *Browser:* `${{ env.BROWSER }}`
+
+            *⚖️ Stability (last 10 runs):* ${{ env.STABILITY }}
+            *📊 Summary:* ${{ env.TEST_SUMMARY }}
+            *✅ Passed Tests Suite:* ${{ env.PASSED_SUITES }}
+            *❌ Failed Tests:* ${{ env.FAILED_TESTS }}
+
+            *🔗 Links*
+            [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})
+            [Error Screenshot](https://github.com/chbazan/${{ env.PUBLIC_REPO }}/blob/gh-pages/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.ENCODED_TEST_SUITE }}/screenshots/${{ env.SCREENSHOT_FOLDER }}/${{ env.SCREENSHOT_NAME }})
+
+            *🛑 Error Messages:* 
+              \`\`\`
+              ${{ env.ERROR_MESSAGES }}
+              \`\`\`
+          SLACK_USERNAME: 'GitHub Actions'
+          SLACK_ICON_EMOJI: ':warning:'
+      
+      - name: Notify Slack on Success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.NERDEARLA_SLACK_WEBHOOK }}
+          SLACK_COLOR: 'good'
+          SLACKIFY_MARKDOWN: true
+          SLACK_MESSAGE: |
+
+            *:cypress_logo: Nerdearla :bug: *
+            
+            *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
+            *Environment:* `${{ env.ENVIRONMENT }}`
+            *Client:* `${{ env.CLIENT }}`
+            *Version:* `${{ env.VERSION }}`
+            *Browser:* `${{ env.BROWSER }}`
+
+            *⚖️ Stability (last 10 runs):* ${{ env.STABILITY }}
+            *📊 Summary:* ${{ env.TEST_SUMMARY }}
+            *📈 Suite Metrics:* ${{ env.SUITE_METRICS }}
+            *📝 Metrics Comments:* ${{ env.COMMENTS || '-' }}
+
+            *🔗 Links*
+            [Comparative Metrics](https://github.com/chbazan/${{ env.PUBLIC_REPO }}/tree/metrics/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.VERSION }})
+            [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})
+          SLACK_USERNAME: 'GitHub Actions'
+          SLACK_ICON_EMOJI: ':white_check_mark:'
