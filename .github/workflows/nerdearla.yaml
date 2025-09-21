@@ -156,21 +156,15 @@ jobs:
       - name: Run metrics alert script
         if: success()
         run: |
-          ALERTS=$(python alerta_metricas.py | tr -d '\r')
-          if [ -z "$ALERTS" ]; then
-            ALERTS="No alerts"
-          fi
+          ALERTS=$(python alerta_metricas.py | tr -d '\r' | xargs)
 
-          # Construimos el bloque de alerta solo si hay alertas
-          if [ "$ALERTS" != "No alerts" ]; then
-            ALERT_MSG="*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10%:\n\`\`\`\n$ALERTS\n\`\`\`"
+          if [ -z "$ALERTS" ] || [ "$ALERTS" = "No alerts" ]; then
+            ALERT_MSG=":warning: Metrics Alert: No Alerts"
           else
-            ALERT_MSG=""
+            ALERT_MSG=":warning: Metrics Alert! $ALERTS"
           fi
 
-          echo "ALERT_MSG<<EOF" >> $GITHUB_ENV
-          echo "$ALERT_MSG" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "ALERT_MSG=$ALERT_MSG" >> $GITHUB_ENV
 
       - name: Upload csv generated metrics
         uses: actions/upload-artifact@v4
@@ -461,7 +455,7 @@ jobs:
           SLACK_COLOR: 'good'
           SLACKIFY_MARKDOWN: true
           SLACK_MESSAGE: |
-            *:cypress_logo: Nerdearla :nerdearla_logo: *
+            *:cypress_logo: Nerdearla :nerdearla_logo:*
 
             *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
             *Environment:* `${{ env.ENVIRONMENT }}`
