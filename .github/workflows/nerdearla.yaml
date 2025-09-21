@@ -181,6 +181,7 @@ jobs:
           FORMATTED_ALERTS=$(echo "$ALERT_MSG" | sed -E 's/([a-zA-Z]+: [^ ]+)/\1 | /g' | sed 's/ | $//')
 
           echo "ALERT_MSG=$FORMATTED_ALERTS" >> $GITHUB_ENV
+          echo "FORMATTED_ALERTS=$FORMATTED_ALERTS" >> $GITHUB_ENV
           echo "Secciones con alertas formateado: $FORMATTED_ALERTS"
 
       - name: Upload csv generated metrics
