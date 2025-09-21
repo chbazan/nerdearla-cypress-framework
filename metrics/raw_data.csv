@@ -189,3 +189,13 @@ Timestamp,Cliente,Ambiente,Sección,Descripción,Tiempo (ms),Versión,Muestra,Co
 2025-09-21T18:45:21-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,134,2020,3,Hora pico
 2025-09-21T18:45:21-03:00,Nerdearla,Production,Compra,Checkout de la compra,1281,2020,3,Hora pico
 2025-09-21T18:45:21-03:00,Nerdearla,Production,Compra,Confirmar la compra,285,2020,3,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Login,Login y preseteo de datos,1730,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Login,105,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Ingreso al home,446,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2068,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,481,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,315,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,559,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,151,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Checkout de la compra,1280,2020,4,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Confirmar la compra,397,2020,4,Hora pico

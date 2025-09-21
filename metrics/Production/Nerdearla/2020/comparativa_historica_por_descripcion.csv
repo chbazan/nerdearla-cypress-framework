@@ -1,11 +1,11 @@
 Timestamp,Cliente,Ambiente,Sección,Descripción,Versión,P95 (ms) de la última muestra,P95 (ms) histórico,Porcentaje de mejora/empeora,Comentarios
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,519.0,608.1,14.65,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,1281.0,1247.2,-2.71,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,285.0,270.3,-5.44,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,134.0,141.2,5.1,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,684.0,652.0,-4.91,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,511.0,514.6,0.7,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Home,Ingreso al home,2020,454.0,452.8,-0.27,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Home,Login,2020,100.0,99.7,-0.3,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,2714.0,2686.8,-1.01,Hora pico
-2025-09-21T18:45:21-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1690.0,1651.3,-2.34,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,559.0,609.15,8.23,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,1280.0,1280.85,0.07,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,397.0,380.2,-4.42,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,151.0,149.65,-0.9,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,315.0,636.0,50.47,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,481.0,514.4,6.49,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Ingreso al home,2020,446.0,452.8,1.5,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Login,2020,105.0,104.25,-0.72,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,2068.0,2673.2,22.64,Hora pico
+2025-09-21T20:22:20-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1730.0,1724.0,-0.35,Hora pico
