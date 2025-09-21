@@ -82,7 +82,7 @@ jobs:
           # === URLs según Environment + Client ===
           case "${{ github.event.inputs.Environment }}-${{ github.event.inputs.Client }}" in
             Production-Nerdearla)
-              echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV" # La URL de LOCATION iría cambiando según ambiente y cliente
+              echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV"
               ;;
             Production-Otro)
               echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV"
@@ -91,20 +91,17 @@ jobs:
               echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV"
               ;;
             Testing-Otro)
-              echo "LOCATION=https://www.saucedemo.com/v1/index.html >> "$GITHUB_ENV"
+              echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV"
               ;;
           esac
 
-          # === Selección de suite de tests ===
-          # 1) Ejecutar TODO (por default si RunAllSpecs es true)
+          # === Selección de tests a correr ===
           if [[ "${{ github.event.inputs.RunAllSpecs }}" == "true" ]]; then
             echo "TEST_SUITE=nerdearla" >> "$GITHUB_ENV"
-
-          # 2) Ejecutar un test específico si RunSpecificSpec != false
           elif [[ "${{ github.event.inputs.RunSpecificSpec }}" != "false" ]]; then
             case "${{ github.event.inputs.RunSpecificSpec }}" in
-              "Home")          echo "TEST_SUITE=home" >> "$GITHUB_ENV" ;;
-              "Purchase")            echo "TEST_SUITE=purchase" >> "$GITHUB_ENV" ;;
+              Home)     echo "TEST_SUITE=home" >> "$GITHUB_ENV" ;;
+              Purchase) echo "TEST_SUITE=purchase" >> "$GITHUB_ENV" ;;
             esac
           fi
 
