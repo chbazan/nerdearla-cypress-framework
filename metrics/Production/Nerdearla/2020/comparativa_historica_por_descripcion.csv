@@ -1,11 +1,11 @@
 Timestamp,Cliente,Ambiente,Sección,Descripción,Versión,P95 (ms) de la última muestra,P95 (ms) histórico,Porcentaje de mejora/empeora
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,521.0,571.65,8.86
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,1191.0,1281.5,7.06
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,212.0,375.8,43.59
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,125.0,198.8,37.12
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,219.0,539.25,59.39
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,478.0,558.3,14.38
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Home,Ingreso al home,2020,445.0,539.15,17.46
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Home,Login,2020,98.0,144.55,32.2
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,1862.0,2853.75,34.75
-2025-09-21T17:22:00-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1408.0,1766.15,20.28
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,546.0,569.8,4.18
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,1089.0,1280.0,14.92
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,281.0,373.6,24.79
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,100.0,198.6,49.65
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,286.0,532.0,46.24
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,473.0,557.6,15.17
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Home,Ingreso al home,2020,272.0,538.8,49.52
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Home,Login,2020,98.0,141.6,30.79
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,1954.0,2845.0,31.32
+2025-09-21T17:26:13-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1711.0,1765.8,3.1
