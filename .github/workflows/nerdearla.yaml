@@ -161,9 +161,9 @@ jobs:
 
           # Si está vacío o dice "No alerts", ponemos mensaje fijo
           if [ -z "$ALERTS" ] || [ "$ALERTS" = "No alerts" ]; then
-            ALERT_MSG=":warning: Metrics Alert: No Alerts"
+            ALERT_MSG=" No Alerts"
           else
-            ALERT_MSG=":warning: Metrics Alert! $ALERTS"
+            ALERT_MSG=" $ALERTS"
           fi
 
           # Guardamos en GitHub ENV
@@ -467,8 +467,7 @@ jobs:
             *Version:* `${{ env.VERSION }}`
             *Browser:* `${{ env.BROWSER }}`
 
-            ${{ env.ALERT_MSG }}
-
+            *⚠️​ Metrics Alert:* ${{ env.ALERT_MSG }}
             *⚖️ Stability (last 10 runs):* ${{ env.STABILITY }}
             *📊 Summary:* ${{ env.TEST_SUMMARY }}
             *📈 Suite Metrics:* ${{ env.SUITE_METRICS }}
