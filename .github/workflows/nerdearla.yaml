@@ -410,7 +410,7 @@ jobs:
           SLACKIFY_MARKDOWN: true
           SLACK_MESSAGE: |
 
-            *:cypress_logo: Nerdearla :bug: *
+            *:cypress_logo: Nerdearla :nerdearla_logo: *
             
             *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
             *Environment:* `${{ env.ENVIRONMENT }}`
@@ -443,7 +443,7 @@ jobs:
           SLACKIFY_MARKDOWN: true
           SLACK_MESSAGE: |
 
-            *:cypress_logo: Nerdearla :bug: *
+            *:cypress_logo: Nerdearla :nerdearla_logo: *
             
             *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
             *Environment:* `${{ env.ENVIRONMENT }}`
