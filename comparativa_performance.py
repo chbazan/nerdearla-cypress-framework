@@ -139,7 +139,7 @@ else:
     # --- Comparativa histórica por sección de la versión ---
     # ===========================================================
 
-    metrics_csv = os.path.join(output_dir, 'comparativa_historica_por_seccion.csv')
+    p95_csv = os.path.join(output_dir, 'comparativa_historica_por_seccion.csv')
     with open(csv_path, newline='') as raw_file:
         reader = csv.DictReader(raw_file)
         rows = list(reader)
@@ -178,21 +178,18 @@ else:
                 durations_last.setdefault(section, []).append(dur)
 
         # --- Preparar campos del CSV y agregar Comentarios si existe
-        metrics_fields = [
+        p95_fields = [
             'Timestamp', 'Cliente', 'Ambiente',
             'Sección', 'Versión',
             'P95 (ms) de la última muestra',
             'P95 (ms) histórico',
-            'Porcentaje de mejora/empeora del p95',
-            'Mediana (ms) de la última muestra',
-            'Mediana (ms) histórica',
-            'Porcentaje de mejora/empeora de la mediana'
+            'Porcentaje de mejora/empeora'
         ]
         if comentarios:
-            metrics_fields.append('Comentarios')
+            p95_fields.append('Comentarios')
 
-        with open(metrics_csv, mode='w', newline='') as metrics_file:
-            writer = csv.DictWriter(metrics_file, fieldnames=metrics_fields)
+        with open(p95_csv, mode='w', newline='') as p95_file:
+            writer = csv.DictWriter(p95_file, fieldnames=p95_fields)
             writer.writeheader()
 
             for section in sorted(durations_total):
@@ -201,21 +198,15 @@ else:
                     continue
 
                 total_p95 = round(np.percentile(durations_total[section], 95), 2)
-                total_median = round(np.median(durations_total[section]), 2)
 
                 if section in durations_last and len(durations_last[section]) > 0:
                     last_p95 = round(np.percentile(durations_last[section], 95), 2)
-                    last_median = round(np.median(durations_last[section]), 2)
                     diff_pct = (
                         round(((total_p95 - last_p95) / total_p95) * 100, 2)
                         if total_p95 > 0 else 0.0
                     )
-                    diff_median_pct = (
-                        round(((total_median - last_median) / total_median) * 100, 2)
-                        if total_median > 0 else 0.0
-                    )
                 else:
-                    last_p95, diff_pct, last_median, diff_median_pct = '', '', '',
+                    last_p95, diff_pct = '', ''
 
                 # --- Preparar fila y agregar Comentarios si corresponde
                 fila = {
@@ -226,17 +217,14 @@ else:
                     'Versión': version,
                     'P95 (ms) de la última muestra': last_p95,
                     'P95 (ms) histórico': total_p95,
-                    'Porcentaje de mejora/empeora del p95': diff_pct,
-                    'Mediana (ms) de la última muestra': last_median,
-                    'Mediana (ms) histórica': total_median,
-                    'Porcentaje de mejora/empeora de la mediana': diff_median_pct
+                    'Porcentaje de mejora/empeora': diff_pct
                 }
                 if comentarios:
                     fila['Comentarios'] = comentarios
 
                 writer.writerow(fila)
 
-        print(f"[LOG] Comparativa histórica por sección generada en {metrics_csv}")
+        print(f"[LOG] Comparativa histórica por sección generada en {p95_csv}")
 
     # ===========================================================
     # --- Comparativa histórica por descripción de la versión ---
@@ -271,21 +259,18 @@ else:
                 durations_last.setdefault(key, []).append(dur)
 
         # --- Preparar campos del CSV y agregar Comentarios si existe
-        metrics_fields_desc = [
+        p95_fields_desc = [
             'Timestamp', 'Cliente', 'Ambiente',
             'Sección', 'Descripción', 'Versión',
             'P95 (ms) de la última muestra',
             'P95 (ms) histórico',
-            'Porcentaje de mejora/empeora del p95',
-            'Mediana (ms) de la última muestra',
-            'Mediana (ms) histórica',
-            'Porcentaje de mejora/empeora de la mediana' 
+            'Porcentaje de mejora/empeora'
         ]
         if comentarios:
-            metrics_fields_desc.append('Comentarios')
+            p95_fields_desc.append('Comentarios')
 
-        with open(p95_desc_csv, mode='w', newline='') as metrics_file:
-            writer = csv.DictWriter(metrics_file, fieldnames=metrics_fields_desc)
+        with open(p95_desc_csv, mode='w', newline='') as p95_file:
+            writer = csv.DictWriter(p95_file, fieldnames=p95_fields_desc)
             writer.writeheader()
 
             for key in sorted(durations_total):
@@ -296,21 +281,15 @@ else:
                     continue
 
                 total_p95 = round(np.percentile(durations_total[key], 95), 2)
-                total_median = round(np.median(durations_total[key]), 2)
 
                 if key in durations_last and len(durations_last[key]) > 0:
                     last_p95 = round(np.percentile(durations_last[key], 95), 2)
-                    last_median = round(np.median(durations_last[key]), 2)
                     diff_pct = (
                         round(((total_p95 - last_p95) / total_p95) * 100, 2)
                         if total_p95 > 0 else 0.0
                     )
-                    diff_median_pct = (
-                        round(((total_median - last_median) / total_median) * 100, 2)
-                        if total_median > 0 else 0.0
-                    )
                 else:
-                    last_p95, diff_pct, last_median, diff_median_pct = '', '', '', ''
+                    last_p95, diff_pct = '', ''
                     print(f"[WARN] Descripción '{description}' en sección '{section}' no tiene muestra en la última ejecución")
 
                 # --- Preparar fila y agregar Comentarios si corresponde
@@ -323,10 +302,7 @@ else:
                     'Versión': version,
                     'P95 (ms) de la última muestra': last_p95,
                     'P95 (ms) histórico': total_p95,
-                    'Porcentaje de mejora/empeora del p95': diff_pct,
-                    'Mediana (ms) de la última muestra': last_median,
-                    'Mediana (ms) histórica': total_median,
-                    'Porcentaje de mejora/empeora de la mediana': diff_median_pct
+                    'Porcentaje de mejora/empeora': diff_pct
                 }
                 if comentarios:
                     fila['Comentarios'] = comentarios
@@ -378,7 +354,7 @@ else:
     # ==============================================
     # --- Comparativa entre versiones por sección ---
     # ==============================================
-    metrics_vs_version_csv = os.path.join(
+    p95_vs_version_csv = os.path.join(
         output_dir, f'comparativa_por_seccion_vs_{compare_version}.csv'
     )
 
@@ -404,20 +380,18 @@ else:
         elif r['Versión'] == compare_version:
             durations_compare.setdefault(section, []).append(dur)
 
-    with open(metrics_vs_version_csv, mode='w', newline='') as metrics_file:
-        metrics_fields = [
-            'Timestamp', 'Cliente', 'Ambiente', 'Sección',
+    with open(p95_vs_version_csv, mode='w', newline='') as p95_file:
+        p95_fields = [
+            'Timestamp', 'Cliente', 'Ambiente',
+            'Sección',
             f'P95 (ms) de la última versión {version}',
             f'P95 (ms) de la versión {compare_version}',
-            'Porcentaje de mejora/empeora del P95',
-            f'Mediana (ms) de la última versión {version}',
-            f'Mediana (ms) de la versión {compare_version}',
-            'Porcentaje de mejora/empeora de la mediana'
+            'Porcentaje de mejora/empeora'
         ]
         if comentarios:
-            metrics_fields.append('Comentarios')
+            p95_fields.append('Comentarios')
 
-        writer = csv.DictWriter(metrics_file, fieldnames=metrics_fields)
+        writer = csv.DictWriter(p95_file, fieldnames=p95_fields)
         writer.writeheader()
 
         all_sections = sorted(set(durations_actual) | set(durations_compare))
@@ -431,10 +405,7 @@ else:
 
             p95_actual = round(np.percentile(durations_actual[section], 95), 2)
             p95_compare = round(np.percentile(durations_compare[section], 95), 2)
-            median_actual = round(np.median(durations_actual[section]), 2)
-            median_compare = round(np.median(durations_compare[section]), 2)
-            diff_p95 = round(((p95_compare - p95_actual) / p95_compare) * 100, 2) if p95_compare > 0 else 0.0
-            diff_median = round((median_compare - median_actual) / median_compare)
+            diff_pct = round(((p95_compare - p95_actual) / p95_compare) * 100, 2) if p95_compare > 0 else 0.0
 
             row = {
                 'Timestamp': timestamp,
@@ -443,22 +414,19 @@ else:
                 'Sección': section,
                 f'P95 (ms) de la última versión {version}': p95_actual,
                 f'P95 (ms) de la versión {compare_version}': p95_compare,
-                'Porcentaje de mejora/empeora del P95': diff_p95,
-                f'Mediana (ms) de la última versión {version}': median_actual,
-                f'Mediana (ms) de la versión {compare_version}': median_compare,
-                'Porcentaje de mejora/empeora de la mediana': diff_median
+                'Porcentaje de mejora/empeora': diff_pct
             }
             if comentarios:
                 row['Comentarios'] = comentarios
 
             writer.writerow(row)
 
-    print(f"[LOG] Comparativa por sección entre versiones generada en {metrics_vs_version_csv}")
+    print(f"[LOG] Comparativa por sección entre versiones generada en {p95_vs_version_csv}")
 
     # =================================================
     # --- Comparativa entre versiones por descripción ---
     # =================================================
-    metrics_desc_vs_version_csv = os.path.join(
+    p95_desc_vs_version_csv = os.path.join(
         output_dir, f'comparativa_por_descripcion_vs_{compare_version}.csv'
     )
 
@@ -474,20 +442,18 @@ else:
         elif r['Versión'] == compare_version:
             durations_compare.setdefault(key, []).append(dur)
 
-    with open(metrics_desc_vs_version_csv, mode='w', newline='') as metrics_file:
-        metrics_fields = [
-            'Timestamp', 'Cliente', 'Ambiente', 'Sección',
+    with open(p95_desc_vs_version_csv, mode='w', newline='') as p95_file:
+        p95_fields = [
+            'Timestamp', 'Cliente', 'Ambiente',
+            'Sección', 'Descripción',
             f'P95 (ms) de la última versión {version}',
             f'P95 (ms) de la versión {compare_version}',
-            'Porcentaje de mejora/empeora del P95',
-            f'Mediana (ms) de la última versión {version}',
-            f'Mediana (ms) de la versión {compare_version}',
-            'Porcentaje de mejora/empeora de la mediana'
+            'Porcentaje de mejora/empeora'
         ]
         if comentarios:
-            metrics_fields.append('Comentarios')
+            p95_fields.append('Comentarios')
 
-        writer = csv.DictWriter(metrics_file, fieldnames=metrics_fields)
+        writer = csv.DictWriter(p95_file, fieldnames=p95_fields)
         writer.writeheader()
 
         all_keys = sorted(set(durations_actual) | set(durations_compare))
@@ -500,31 +466,26 @@ else:
                 print(f"[WARN] Descripción '{description}' en sección '{section}' no tiene muestras en la versión {compare_version}")
                 continue
 
-            p95_actual = round(np.percentile(durations_actual[section], 95), 2)
-            p95_compare = round(np.percentile(durations_compare[section], 95), 2)
-            median_actual = round(np.median(durations_actual[section]), 2)
-            median_compare = round(np.median(durations_compare[section]), 2)
-            diff_p95 = round(((p95_compare - p95_actual) / p95_compare) * 100, 2) if p95_compare > 0 else 0.0
-            diff_median = round((median_compare - median_actual) / median_compare)
+            p95_actual = round(np.percentile(durations_actual[key], 95), 2)
+            p95_compare = round(np.percentile(durations_compare[key], 95), 2)
+            diff_pct = round(((p95_compare - p95_actual) / p95_compare) * 100, 2) if p95_compare > 0 else 0.0
 
             row = {
                 'Timestamp': timestamp,
                 'Cliente': cliente,
                 'Ambiente': ambiente,
                 'Sección': section,
+                'Descripción': description,
                 f'P95 (ms) de la última versión {version}': p95_actual,
                 f'P95 (ms) de la versión {compare_version}': p95_compare,
-                'Porcentaje de mejora/empeora del P95': diff_p95,
-                f'Mediana (ms) de la última versión {version}': median_actual,
-                f'Mediana (ms) de la versión {compare_version}': median_compare,
-                'Porcentaje de mejora/empeora de la mediana': diff_median
+                'Porcentaje de mejora/empeora': diff_pct
             }
             if comentarios:
                 row['Comentarios'] = comentarios
 
             writer.writerow(row)
 
-    print(f"[LOG] Comparativa por descripción entre versiones generada en {metrics_desc_vs_version_csv}")
+    print(f"[LOG] Comparativa por descripción entre versiones generada en {p95_desc_vs_version_csv}")
 
 # ==========================================================================================================================================
 #                                           -- Finaliza la comparativa entre versiones  ---
