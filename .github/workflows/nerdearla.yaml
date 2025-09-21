@@ -155,14 +155,14 @@ jobs:
 
       - name: Run metrics alert script
         if: success()
+        id: check_metrics
         env:
           VERSION: ${{ env.VERSION }}
           ENVIRONMENT: ${{ env.ENVIRONMENT }}
           CLIENT: ${{ env.CLIENT }}
           COMMENTS: ${{ env.COMMENTS }}
-        run: python alerta_metricas.py
-        continue-on-error: true  # para que el job no falle y podamos manejar la alerta por separado
-        id: check_metrics          # id para poder usar outputs en el Slack step
+        run: |
+          python alerta_metricas.py
 
       - name: Upload csv generated metrics
         uses: actions/upload-artifact@v4
@@ -447,34 +447,43 @@ jobs:
       
       - name: Notify Slack on Success
         if: success()
+        shell: bash
+        run: |
+          ALERT_MSG=""
+          # Capturamos el output del step del script de alertas
+          if [ "${{ steps.check_metrics.outputs.ALERT_METRICS }}" != "No alerts triggered." ]; then
+            ALERT_MSG="*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10% en esta corrida:\n\`\`\`\n${{ steps.check_metrics.outputs.ALERT_METRICS }}\n\`\`\`"
+          fi
+
+          # Construimos el mensaje completo
+          SLACK_MESSAGE="*:cypress_logo: Nerdearla :nerdearla_logo:*\n
+          *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
+          *Environment:* \`${{ env.ENVIRONMENT }}\`
+          *Client:* \`${{ env.CLIENT }}\`
+          *Version:* \`${{ env.VERSION }}\`
+          *Browser:* \`${{ env.BROWSER }}\`
+
+          $ALERT_MSG
+
+          *⚖️ Stability (last 10 runs):* ${{ env.STABILITY }}
+          *📊 Summary:* ${{ env.TEST_SUMMARY }}
+          *📈 Suite Metrics:* ${{ env.SUITE_METRICS }}
+          *📝 Metrics Comments:* ${{ env.COMMENTS || '-' }}
+
+          *🔗 Links*
+          [Comparative Metrics](https://github.com/chbazan/${{ env.PUBLIC_REPO }}/tree/metrics/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.VERSION }})
+          [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})"
+
+          # Exportamos para usar en el step de Slack
+          echo "SLACK_MESSAGE=$SLACK_MESSAGE" >> $GITHUB_ENV
+
+      - name: Send Slack Notification
+        if: success()
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.NERDEARLA_SLACK_WEBHOOK }}
           SLACK_COLOR: 'good'
           SLACKIFY_MARKDOWN: true
-          SLACK_MESSAGE: |
-
-            *:cypress_logo: Nerdearla :nerdearla_logo: *
-            
-            *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
-            *Environment:* `${{ env.ENVIRONMENT }}`
-            *Client:* `${{ env.CLIENT }}`
-            *Version:* `${{ env.VERSION }}`
-            *Browser:* `${{ env.BROWSER }}`
-
-            *:warning: Metrics Alert*
-            Algunas secciones empeoraron más del 10% en esta corrida:
-            ```
-            ${{ steps.check_metrics.outputs.ALERT_METRICS }}
-            ```
-
-            *⚖️ Stability (last 10 runs):* ${{ env.STABILITY }}
-            *📊 Summary:* ${{ env.TEST_SUMMARY }}
-            *📈 Suite Metrics:* ${{ env.SUITE_METRICS }}
-            *📝 Metrics Comments:* ${{ env.COMMENTS || '-' }}
-
-            *🔗 Links*
-            [Comparative Metrics](https://github.com/chbazan/${{ env.PUBLIC_REPO }}/tree/metrics/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.VERSION }})
-            [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})
+          SLACK_MESSAGE: ${{ env.SLACK_MESSAGE }}
           SLACK_USERNAME: 'GitHub Actions'
           SLACK_ICON_EMOJI: ':white_check_mark:'
