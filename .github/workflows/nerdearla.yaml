@@ -26,6 +26,7 @@ on:
         type: choice
         options:
           - Metrics
+          - Performance Problems
       Browser:
         description: 'Browser to use'
         required: true
@@ -95,9 +96,13 @@ jobs:
               ;;
           esac
 
-          # === Selección de tests a correr ===
+          # === Selección de tests a correr según RunAllSpecs y Test ===
           if [[ "${{ github.event.inputs.RunAllSpecs }}" == "true" ]]; then
-            echo "TEST_SUITE=nerdearla" >> "$GITHUB_ENV"
+            case "${{ github.event.inputs.Test }}" in
+              Metrics) echo "TEST_SUITE=nerdearla" >> "$GITHUB_ENV" ;;
+              "Performance Problems") echo "TEST_SUITE=performance-problems" >> "$GITHUB_ENV" ;;
+              *) echo "TEST_SUITE=nerdearla" >> "$GITHUB_ENV" ;;  # fallback por defecto
+            esac
           elif [[ "${{ github.event.inputs.RunSpecificSpec }}" != "false" ]]; then
             case "${{ github.event.inputs.RunSpecificSpec }}" in
               Home)     echo "TEST_SUITE=home" >> "$GITHUB_ENV" ;;
