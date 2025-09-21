@@ -160,7 +160,17 @@ jobs:
           if [ -z "$ALERTS" ]; then
             ALERTS="No alerts"
           fi
-          echo "ALERT_METRICS=$ALERTS" >> $GITHUB_ENV
+
+          # Construimos el bloque de alerta solo si hay alertas
+          if [ "$ALERTS" != "No alerts" ]; then
+            ALERT_MSG="*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10%:\n\`\`\`\n$ALERTS\n\`\`\`"
+          else
+            ALERT_MSG=""
+          fi
+
+          echo "ALERT_MSG<<EOF" >> $GITHUB_ENV
+          echo "$ALERT_MSG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
       - name: Upload csv generated metrics
         uses: actions/upload-artifact@v4
@@ -450,7 +460,6 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.NERDEARLA_SLACK_WEBHOOK }}
           SLACK_COLOR: 'good'
           SLACKIFY_MARKDOWN: true
-          ALERT_MSG: ${{ env.ALERT_METRICS }}
           SLACK_MESSAGE: |
             *:cypress_logo: Nerdearla :nerdearla_logo: *
 
@@ -460,7 +469,7 @@ jobs:
             *Version:* `${{ env.VERSION }}`
             *Browser:* `${{ env.BROWSER }}`
 
-            ${{ env.ALERT_METRICS != 'No alerts' && '*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10%:\n```' + env.ALERT_METRICS + '\n```' || '' }}
+            ${{ env.ALERT_MSG }}
 
             *⚖️ Stability (last 10 runs):* ${{ env.STABILITY }}
             *📊 Summary:* ${{ env.TEST_SUMMARY }}
@@ -472,4 +481,3 @@ jobs:
             [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})
           SLACK_USERNAME: 'GitHub Actions'
           SLACK_ICON_EMOJI: ':white_check_mark:'
-
