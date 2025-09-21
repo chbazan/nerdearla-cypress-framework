@@ -161,7 +161,6 @@ jobs:
       - name: Run metrics alert script
         if: success()
         run: |
-          # Ejecutamos el script y capturamos solo la salida relevante
           ALERTS=$(python alerta_metricas.py | grep -v "ALERT_METRICS" | grep -v "EOF" | xargs)
 
           # Si está vacío o dice "No alerts", ponemos mensaje fijo
@@ -174,6 +173,15 @@ jobs:
           # Guardamos en GitHub ENV
           echo "ALERT_MSG=$ALERT_MSG" >> $GITHUB_ENV
           echo "Secciones con alertas: $ALERT_MSG"
+
+      - name: Format metrics alert for Slack
+        if: success()
+        shell: bash
+        run: |
+          FORMATTED_ALERTS=$(echo "$ALERT_MSG" | sed -E 's/([a-zA-Z]+: [^ ]+)/\1 | /g' | sed 's/ | $//')
+
+          echo "ALERT_MSG=$FORMATTED_ALERTS" >> $GITHUB_ENV
+          echo "Secciones con alertas formateado: $FORMATTED_ALERTS"
 
       - name: Upload csv generated metrics
         uses: actions/upload-artifact@v4
@@ -472,7 +480,7 @@ jobs:
             *Version:* `${{ env.VERSION }}`
             *Browser:* `${{ env.BROWSER }}`
 
-            *⚠️​ Metrics Alert:* ${{ env.ALERT_MSG }}
+            *⚠️​ Metrics Alert:* ${{ env.FORMATTED_ALERTS }}
             *⚖️ Stability (last 10 runs):* ${{ env.STABILITY }}
             *📊 Summary:* ${{ env.TEST_SUMMARY }}
             *📈 Suite Metrics:* ${{ env.SUITE_METRICS }}
