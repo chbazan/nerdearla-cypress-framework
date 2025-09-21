@@ -18,7 +18,7 @@ on:
         type: choice
         options:
           - Nerdearla
-          - Otro cliente
+          - Otro
       Test:
         description: 'Test suite to run'
         required: true
@@ -84,13 +84,13 @@ jobs:
             Production-Nerdearla)
               echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV" # La URL de LOCATION iría cambiando según ambiente y cliente
               ;;
-            Production-Otro cliente)
+            Production-Otro)
               echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV"
               ;;
             Testing-Nerdearla)
               echo "LOCATION=https://www.saucedemo.com/v1/index.html" >> "$GITHUB_ENV"
               ;;
-            Testing-Otro cliente)
+            Testing-Otro)
               echo "LOCATION=https://www.saucedemo.com/v1/index.html >> "$GITHUB_ENV"
               ;;
           esac
