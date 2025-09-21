@@ -450,12 +450,15 @@ jobs:
         if: success()
         shell: bash
         run: |
-          ALERT_MSG=""
-          if [ "${{ steps.check_metrics.outputs.ALERT_METRICS }}" != "No alerts triggered." ]; then
-            ALERT_MSG="*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10% en esta corrida:\n\`\`\`\n${{ steps.check_metrics.outputs.ALERT_METRICS }}\n\`\`\`"
+          ALERT_MSG="${{ steps.check_metrics.outputs.ALERT_METRICS }}"
+
+          # Agregamos bloque de alerta solo si no es "Sin alertas"
+          if [ "$ALERT_MSG" != "Sin alertas" ]; then
+            ALERT_MSG="*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10% en esta corrida:\n\`\`\`\n$ALERT_MSG\n\`\`\`"
+          else
+            ALERT_MSG=""
           fi
 
-          # Creamos mensaje completo
           cat <<EOF > slack_message.txt
           *:cypress_logo: Nerdearla :nerdearla_logo:*
 
@@ -477,12 +480,12 @@ jobs:
           [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})
           EOF
 
-          # Exportamos variable para el siguiente step
-          SLACK_MSG=$(cat slack_message.txt)
-          echo "SLACK_MESSAGE<<EOF" >> $GITHUB_ENV
-          echo "$SLACK_MSG" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-          
+              # Exportamos variable para el siguiente step
+              SLACK_MSG=$(cat slack_message.txt)
+              echo "SLACK_MESSAGE<<EOF" >> $GITHUB_ENV
+              echo "$SLACK_MSG" >> $GITHUB_ENV
+              echo "EOF" >> $GITHUB_ENV
+
       - name: Send Slack Notification on success
         if: success()
         uses: rtCamp/action-slack-notify@v2
