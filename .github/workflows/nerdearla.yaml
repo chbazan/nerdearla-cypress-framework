@@ -445,18 +445,20 @@ jobs:
           SLACK_USERNAME: 'GitHub Actions'
           SLACK_ICON_EMOJI: ':warning:'
       
-      - name: Notify Slack on Success
+      - name: Build Slack message
+        id: slack_message
         if: success()
         shell: bash
         run: |
           ALERT_MSG=""
-          # Capturamos el output del step del script de alertas
           if [ "${{ steps.check_metrics.outputs.ALERT_METRICS }}" != "No alerts triggered." ]; then
             ALERT_MSG="*:warning: Metrics Alert!*\nAlgunas secciones empeoraron más del 10% en esta corrida:\n\`\`\`\n${{ steps.check_metrics.outputs.ALERT_METRICS }}\n\`\`\`"
           fi
 
-          # Construimos el mensaje completo
-          SLACK_MESSAGE="*:cypress_logo: Nerdearla :nerdearla_logo:*\n
+          # Creamos mensaje completo
+          cat <<EOF > slack_message.txt
+          *:cypress_logo: Nerdearla :nerdearla_logo:*
+
           *Run:* [#${{ github.run_number }}](https://github.com/Mercap/${{ env.PRIVATE_REPO }}/actions/runs/${{ github.run_id }})
           *Environment:* \`${{ env.ENVIRONMENT }}\`
           *Client:* \`${{ env.CLIENT }}\`
@@ -472,12 +474,16 @@ jobs:
 
           *🔗 Links*
           [Comparative Metrics](https://github.com/chbazan/${{ env.PUBLIC_REPO }}/tree/metrics/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.VERSION }})
-          [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})"
+          [Test Report](https://chbazan.github.io/${{ env.PUBLIC_REPO }}/${{ env.ENVIRONMENT }}/${{ env.CLIENT }}/${{ env.TEST_SUITE }})
+          EOF
 
-          # Exportamos para usar en el step de Slack
-          echo "SLACK_MESSAGE=$SLACK_MESSAGE" >> $GITHUB_ENV
-
-      - name: Send Slack Notification
+          # Exportamos variable para el siguiente step
+          SLACK_MSG=$(cat slack_message.txt)
+          echo "SLACK_MESSAGE<<EOF" >> $GITHUB_ENV
+          echo "$SLACK_MSG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          
+      - name: Send Slack Notification on success
         if: success()
         uses: rtCamp/action-slack-notify@v2
         env:
