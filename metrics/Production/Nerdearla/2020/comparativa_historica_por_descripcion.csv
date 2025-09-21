@@ -1,11 +1,11 @@
-Timestamp,Cliente,Ambiente,Sección,Descripción,Versión,P95 (ms) de la última muestra,P95 (ms) histórico,Porcentaje de mejora/empeora
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,550.0,547.8,-0.4
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,1126.0,1122.4,-0.32
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,205.0,315.9,35.11
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,201.0,190.5,-5.51
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,474.0,467.0,-1.5
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,480.0,544.8,11.89
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Home,Ingreso al home,2020,268.0,477.3,43.85
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Home,Login,2020,101.0,110.0,8.18
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,1921.0,2610.9,26.42
-2025-09-21T15:40:16-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1342.0,1701.2,21.11
+Timestamp,Cliente,Ambiente,Sección,Descripción,Versión,P95 (ms) de la última muestra,P95 (ms) histórico,Porcentaje de mejora/empeora del p95,Mediana (ms) de la última muestra,Mediana (ms) histórica,Porcentaje de mejora/empeora de la mediana
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,555.0,554.25,-0.14,555.0,539.0,-2.97
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,1298.0,1272.2,-2.03,1298.0,1108.0,-17.15
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,400.0,389.05,-2.81,400.0,271.5,-47.33
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,121.0,189.0,35.98,121.0,108.5,-11.52
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,465.0,472.65,1.62,465.0,434.5,-7.02
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,479.0,541.2,11.49,479.0,479.5,0.1
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Home,Ingreso al home,2020,427.0,476.3,10.35,427.0,417.5,-2.28
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Home,Login,2020,118.0,116.8,-1.03,118.0,110.0,-7.27
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,2095.0,2594.8,19.26,2095.0,2028.5,-3.28
+2025-09-21T15:48:00-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1763.0,1755.65,-0.42,1763.0,1650.0,-6.85
