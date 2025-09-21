@@ -153,6 +153,17 @@ jobs:
           COMMENTS: ${{ env.COMMENTS }}
         run: python comparativa_performance.py
 
+      - name: Run metrics alert script
+        if: success()
+        env:
+          VERSION: ${{ env.VERSION }}
+          ENVIRONMENT: ${{ env.ENVIRONMENT }}
+          CLIENT: ${{ env.CLIENT }}
+          COMMENTS: ${{ env.COMMENTS }}
+        run: python alerta_metricas.py
+        continue-on-error: true  # para que el job no falle y podamos manejar la alerta por separado
+        id: check_metrics          # id para poder usar outputs en el Slack step
+
       - name: Upload csv generated metrics
         uses: actions/upload-artifact@v4
         if: success()
@@ -450,6 +461,12 @@ jobs:
             *Client:* `${{ env.CLIENT }}`
             *Version:* `${{ env.VERSION }}`
             *Browser:* `${{ env.BROWSER }}`
+
+            *:warning: Metrics Alert*
+            Algunas secciones empeoraron más del 10% en esta corrida:
+            ```
+            ${{ steps.check_metrics.outputs.ALERT_METRICS }}
+            ```
 
             *⚖️ Stability (last 10 runs):* ${{ env.STABILITY }}
             *📊 Summary:* ${{ env.TEST_SUMMARY }}
