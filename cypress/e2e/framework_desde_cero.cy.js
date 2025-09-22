@@ -96,7 +96,10 @@ describe("Login", () => {
   // Esto lo vamos a ver reflejado en nuestro package.json en "dependencies" una vez se encuentra dentro ese archivo solamente, a partir de ese momento solo hace falta hacer npm ci para instalar todo (esto mismo vamos a hacer en el workflow de GH Actions más adelante).
 
   //  Para el manejo de variables de entorno creamos en cypress\support\ el archivo constants.js y en nuestra raíz un archivo .env.
-  // Utilizamos variables de entorno principalmente para: 1- Poder cambiar de entornos facilmente: Producción, Staging, Testing, UAT, etc.  De esa forma la misma suite de pruebas se corre para cada uno de esos ambientes. 2. Proteger información sensible como: Usuarios, Contraseñas, Keys, Tokens, etc. 3. Re-utilizar valores que cuenten con un mismo flujo de test, para variar dinámicamente los datos de prueba y no tener que modificar el código.
+  // Utilizamos variables de entorno principalmente para: 
+  // 1- Poder cambiar de entornos facilmente: Producción, Staging, Testing, UAT, etc.  De esa forma la misma suite de pruebas se corre para cada uno de esos ambientes. 
+  // 2. Proteger información sensible como: Usuarios, Contraseñas, Keys, Tokens, etc. 
+  // 3. Re-utilizar valores que cuenten con un mismo flujo de test, para variar dinámicamente los datos de prueba y no tener que modificar el código.
 
   // Variables de entorno son la mejor opción para proteger secretos y parámetros clave. Pero cuando hablamos de manejar grandes volúmenes de datos de prueba, usamos otras herramientas como fixtures, data builders o incluso servicios externos. La elección depende del tipo de dato y del nivel de protección que necesitamos.
 
@@ -133,7 +136,8 @@ describe("Login", () => {
 
   // Ahora pasamos nuestro login a un comando, utilizando el archivo cypress\support\commands.js
 
-  //¿Qué son los commands en Cypress? Son funciones personalizadas que encapsulan acciones repetitivas. Beneficios: reutilización, organización y legibilidad de los tests.
+  //¿Qué son los commands en Cypress? 
+  // Son funciones personalizadas que encapsulan acciones repetitivas. Beneficios: reutilización, organización y legibilidad de los tests.
 
   it("Login usando comando", () => {
     cy.login();
@@ -305,7 +309,8 @@ describe("Home", () => {
 
 });
 
-// Por último vamos a armar nuestro tercer y último flujo: Hacer una compra de los items, para esto en vez de utilizar Home, o Cart o Checkout como "sección de prueba" (suite de prueba / describe) vamos a ponerle un nombre que nos sirva para englobar los casos que querramos contemplar y nos interese tenerlo como "sección" a seguir como métrica de performance, por ejemplo vamos a usar directamente "Compra"
+// Por último vamos a armar nuestro tercer y último flujo: Hacer una compra de los items, 
+// para esto en vez de utilizar Home, o Cart o Checkout como "sección de prueba" (suite de prueba / describe) vamos a ponerle un nombre que nos sirva para englobar los casos que querramos contemplar y nos interese tenerlo como "sección" a seguir como métrica de performance, por ejemplo vamos a usar directamente "Compra"
 
 describe.only("Compra", () => {
 
