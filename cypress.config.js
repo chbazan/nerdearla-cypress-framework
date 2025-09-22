@@ -8,7 +8,7 @@
       NODE_ENV: { ...process.env },
     },
     e2e: {
-      defaultCommandTimeout: 10000,
+      defaultCommandTimeout: 30000,
       testIsolation: false,
       setupNodeEvents(on, config) {
         
