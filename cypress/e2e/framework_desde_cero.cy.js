@@ -2,21 +2,19 @@ import Constants from "../support/constants"; // Import relativo ES Modules (ESM
 import { home } from "../support/pages/homePage";
 import { purchase } from "../support/pages/purchasePage";
 
-// 1) Explicación de que flujos automatizar y la importancia de las definiciones funcionales
+// 1) Explicación de que flujos automatizar y la importancia de las definiciones funcionales.
 
-// 2) Precondiciones - Node 22 (NVM opcional) - SSH github para clonar el repo > Esto va a estar en el readme.md
+// 2) Para instalar las dependencias > Node 22 (NVM opcional).
 
-// 3) Explicación de mi caso real de como comencé a automatizar, mis principios tratando de regresionar todo y mi nuevo enfoque en flujos con métricas de performance (junto a testing de "componentes" > esto es testIsolation true o false)
-// Como llevar lo practicado localmente cuando nos capacitamos o practicamos a un entorno más real, de interactuar con el equipo, devs, analistas, entender el servicio que brinda la empresa y sus necesidades antes de automatizar por solo el hecho de hacerlo.
+// 3) Enfoque de las pruebas.
 
-// 4) Explicación del framework pasando desde el test, explicando su enfoque y resultados obtenidos > La idea es primero mostrar el resultado final (foto de la notificación de slack y las métricas obtenidas)
-// Y luego armar un paso a paso de como se va "construyendo" ese framework, 1) Estructura de los casos de los flujos debatidos y concordados funcionalmente 2) Buenas prácticas en cypress: configuraciones de resolución de pantalla, timeout, la importancia de los shoulds, seteo de dotnev, uso de comandos, variables de entorno y POM 3) Modularizacón de los specs y run mediante npm de los scripts generados en package.json y el uso de reportes html y json
+// 4) Estructura de los casos de cypress, replicando los flujos debatidos y concordados funcionalmente 2) Buenas prácticas en cypress: configuraciones de resolución de pantalla, timeout, la importancia de los shoulds, seteo de dotnev, uso de comandos, variables de entorno y POM 3) Modularizacón de los specs y run mediante npm de los scripts generados en package.json y el uso de reportes html y json
 
 // 5) Explicación del framework: Complementando cypress
 // Vista por arriba del script de python y que arhivos genera: explicación de los archivos de descripción y sección generados y porque el uso del p95.
-// Explicación del workflow en GH Actions y el seteo de suus tokens y secrets: Ver el paso a paso del workflow y sus diferentes métodos de ejecución (cron - dispatch - push - llamando a otro job - etc)
+// Explicación del workflow en GH Actions y el seteo de sus tokens y secrets: Ver el paso a paso del workflow y sus diferentes métodos de ejecución (cron - dispatch - push - llamando a otro job - etc)
 
-// 6) Sugerencias finales y como "aprovechar" este framework pensando siempre en un enfoque real de aplicación (remitido a los puntos importantes del contexto funcional y la elección de que flujos críticos automatizar) y poder mejorarlo/personalizarlo para cada caso (ejemplo de sumar testing E2E por componente, con testIsolation true; dashboard de métricas en grafana, generar nuevas métricas personalizadas, aplicación de IA, etc).
+// 6) Sugerencias finales y como "aprovechar" este framework.
 
 // Intro a estrcutra, selectores y acciones en cypress
 
@@ -365,10 +363,8 @@ describe.only("Compra", () => {
 });
 
 // Modularizando-ando: Separación de "secciones (describes/suites)" en distintos archivos .cy.js y uso de cy.session con run headless
-// Explicación del workflow en GH Actions
 // Explicación del script de python
-// Cierre con ideas para transformar/mejorar o darle distintos usos al framework (ejemplo de testing E2E por componente, con testIsolation true; dashboard de métricas en grafana, aplicación de IA, recomendaciones de un buen prompt, etc)
-
-// cy.visit(Constants.LOCATION)  // Si no seteo un session con el LogIn voy a necesitar inicar sesión cada vez que genere un nuevo IT. Otra opción sería deshabilitar testIstolation en cypress.config.js test y con esto no necesitaría visitar cada endpoint, se haría siempre login. Otra opción es usar session combinado con testIsolation false, teniendo specCacheAcross habilitado para hacer login una sola vez y compartir el login con todos los specs (Esta es la que vamos a usar en este taller).
+// Explicación del workflow en GH Actions
+// Cierre con ideas para transformar/mejorar o darle distintos usos al framework.
 
 // Aclaración importante: Prohibido usar cy.waits() (salvo último recurso) ya que ensucia las métricas de performance.
