@@ -18,7 +18,12 @@ metrics_dir = os.path.join('metrics')
 os.makedirs(metrics_dir, exist_ok=True)
 csv_path = os.path.join(metrics_dir, 'raw_data.csv')
 
-output_dir = os.path.join(metrics_dir, ambiente, cliente, version)
+# --- Definir output_dir según si hay comentarios ---
+if comentarios:   # si comentarios tiene algún valor
+    output_dir = os.path.join(metrics_dir, ambiente, cliente, version, comentarios)
+else:
+    output_dir = os.path.join(metrics_dir, ambiente, cliente, version)
+
 os.makedirs(output_dir, exist_ok=True)
 
 buenos_aires_tz = pytz.timezone('America/Argentina/Buenos_Aires')
