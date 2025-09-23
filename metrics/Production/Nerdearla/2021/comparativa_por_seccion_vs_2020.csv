@@ -1,4 +1,4 @@
 Timestamp,Cliente,Ambiente,Sección,P95 (ms) de la última versión 2021,P95 (ms) de la versión 2020,Porcentaje de mejora/empeora
-2025-09-23T00:21:02-03:00,Nerdearla,Production,Compra,5735.7,1281.85,-347.45
-2025-09-23T00:21:02-03:00,Nerdearla,Production,Home,2640.75,2690.75,1.86
-2025-09-23T00:21:02-03:00,Nerdearla,Production,Login,5623.9,6562.4,14.3
+2025-09-23T17:58:20-03:00,Nerdearla,Production,Compra,5417.2,1281.85,-322.61
+2025-09-23T17:58:20-03:00,Nerdearla,Production,Home,1929.75,2690.75,28.28
+2025-09-23T17:58:20-03:00,Nerdearla,Production,Login,5381.2,6562.4,18.0
