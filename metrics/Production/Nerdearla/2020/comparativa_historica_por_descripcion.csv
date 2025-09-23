@@ -1,11 +1,11 @@
-Timestamp,Cliente,Ambiente,Sección,Descripción,Versión,P95 (ms) de la última muestra,P95 (ms) histórico,Porcentaje de mejora/empeora,Comentarios
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,559.0,609.15,8.23,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,1280.0,1280.85,0.07,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,397.0,380.2,-4.42,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,151.0,149.65,-0.9,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,315.0,636.0,50.47,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,481.0,514.4,6.49,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Ingreso al home,2020,446.0,452.8,1.5,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Login,2020,105.0,104.25,-0.72,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,2068.0,2673.2,22.64,Hora pico
-2025-09-21T20:22:20-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1730.0,1724.0,-0.35,Hora pico
+Timestamp,Cliente,Ambiente,Sección,Descripción,Versión,P95 (ms) de la última muestra,P95 (ms) histórico,Porcentaje de mejora/empeora
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,464.0,617.25,24.83
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,920.0,1297.15,29.08
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,143.0,399.85,64.24
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,80.0,200.8,60.16
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,203.0,680.75,70.18
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,472.0,551.5,14.42
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Home,Ingreso al home,2020,212.0,542.65,60.93
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Home,Login,2020,72.0,171.35,57.98
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,1643.0,2846.25,42.27
+2025-09-22T23:15:18-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1010.0,6564.8,84.61
