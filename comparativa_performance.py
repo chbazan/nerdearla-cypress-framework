@@ -8,7 +8,7 @@ import numpy as np
 # --- Seteo de variables y datos desde el entorno ---
 ambiente = os.getenv("ENVIRONMENT", "Production")
 cliente  = os.getenv("CLIENT", "Nerdearla")
-version = os.getenv("VERSION", "")
+version = os.getenv("VERSION", "2021")
 comentarios = os.getenv("COMMENTS", "")
 
 with open('version.txt', 'r') as version_file:
