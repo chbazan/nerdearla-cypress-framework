@@ -115,10 +115,10 @@ jobs:
         with:
           node-version: 22
 
-      - name: Clean reports and app version
-        run: |
-          rm -f version.txt
-          rm -rf cypress/reports/*
+      # - name: Clean reports and app version
+      #   run: |
+      #     rm -f version.txt
+      #     rm -rf cypress/reports/*
           
       - name: Run Tests
         uses: cypress-io/github-action@v6
