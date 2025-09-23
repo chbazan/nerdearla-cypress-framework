@@ -1,0 +1,4 @@
+Timestamp,Cliente,Ambiente,Sección,Versión,P95 (ms) de la última muestra,P95 (ms) histórico,Porcentaje de mejora/empeora,Comentarios
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Compra,2020,807.4,1212.6,33.42,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Home,2020,1454.8,2455.6,40.76,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Login,2020,1235.0,1722.0,28.28,Hora pico

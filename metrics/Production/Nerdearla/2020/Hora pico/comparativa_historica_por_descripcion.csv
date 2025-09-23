@@ -1,0 +1,11 @@
+Timestamp,Cliente,Ambiente,Sección,Descripción,Versión,P95 (ms) de la última muestra,P95 (ms) histórico,Porcentaje de mejora/empeora,Comentarios
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Compra,Agregar todos los items al carrito,2020,461.0,606.2,23.95,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Compra,Checkout de la compra,2020,894.0,1280.8,30.2,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Compra,Confirmar la compra,2020,142.0,374.6,62.09,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Compra,Ingresar al carrito lleno,2020,80.0,149.2,46.38,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Compra,Ingreso al carrito vacío,2020,232.0,620.0,62.58,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Home,Eliminar todos los items del carrito,2020,462.0,514.2,10.15,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Home,Ingreso al home,2020,208.0,452.4,54.02,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Home,Login,2020,67.0,104.0,35.58,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Home,Navegabilidad entre items mientras se añaden al carrito,2020,1630.0,2659.6,38.71,Hora pico
+2025-09-22T23:07:56-03:00,Nerdearla,Production,Login,Login y preseteo de datos,2020,1235.0,1722.0,28.28,Hora pico
