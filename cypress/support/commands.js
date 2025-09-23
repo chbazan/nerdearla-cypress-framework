@@ -86,14 +86,15 @@ Cypress.Commands.add("addAllItemsToCart", () => {
 });
 
 Cypress.Commands.add("saveAppVersion", () => {
-    cy.get('div[class="footer_copy"]')
+  cy.get('div.footer_copy')
     .invoke('text')
     .then((text) => {
-      const match = text.match(/\d{4}/); // busca un año (4 dígitos seguidos)
-      const year = match ? match[0] : 'desconocido';
+      const match = text.match(/\d{4}/);       // busca un año (4 dígitos)
+      const year = match ? parseInt(match[0], 10) : null;
+      const nextYear = year ? year + 1 : 2021; // si no encuentra nada, usa 2021 fijo
 
-      cy.writeFile('version.txt', year);
-      cy.log(`Guardando la versión ${year}`)
+      cy.writeFile('version.txt', String(nextYear));
+      cy.log(`Guardando la versión ${nextYear}`);
     });
 });
 
