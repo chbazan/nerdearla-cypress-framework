@@ -10,7 +10,7 @@
    - [Repositorio público](#repositorio-público)
    - [GH token](#gh-token)
    - [Slack webhook](#slack-webook)
-4. [Variables utilizadas 🦾​](#variables-utilizadas-️)
+4. [Variables utilizadas 🦾​](#variables-utilizadas-)
 5. [Ejecución de las pruebas 🐛](#ejecución-de-las-pruebas-)
 6. [Métricas generadas 📊​​](#métricas-generadas)
 7. [Recomendaciones para armar los casos 🗒](#recomendaciones-para-armar-los-casos-)
