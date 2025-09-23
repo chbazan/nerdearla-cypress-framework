@@ -108,7 +108,6 @@ Cypress.Commands.add("loginSession", () => {
       login.clickLogin();
       // Validaciones mínimas para garantizar que la sesión se inició correctamente
       home.getInventoryItem().should("be.visible");
-      cy.saveAppVersion()
       // cy.saveAppVersion()
 
     },
