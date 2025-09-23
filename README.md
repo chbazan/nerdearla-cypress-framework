@@ -143,9 +143,50 @@ Estas variables afectan a todo el test y pueden ser modificadas desde el archivo
 - TEST_USER={usuario para hacer login, que se deja en secrets}
 - TEST_PASSWORD{password del usuario, que también se setea en secrets}
 
+En el job de gh actions se utilizan:
+
+- ENVIRONMENT=
+- CLIENT=
+- TEST=
+- BROWSER=
+- COMMENTS=
+- PUBLIC_REPO=
+- PRIVATE_REPO=
+- LOCATION=
+- TEST_USER=
+- TEST_PASSWORD=
+- VERSION=
+- ALERT_MSG=
+- FORMATTED_ALERTS=
+- TEST_SUMMARY=
+- SUITE_METRICS=
+- FAILED_TESTS=
+- ERROR_MESSAGES=
+- PASSED_SUITES=
+- STABILITY=
+- SCREENSHOT_FOLDER=
+- SCREENSHOT_NAME=
+- ENCODED_TEST_SUITE=
+- GH_TOKEN=
+- NERDEARLA_SLACK_WEBHOOK=
+
 ## Ejecución de las Pruebas 🐛
 
+Dentro de la pestaña Actions vamos a poder correr el workflow llamado Nerdearla pudiendo elegir el ambiente a correr la prueba, el cliente, el test a aplicar, el browser a utilizar, si queremos correr todos los test suites (tildando Run all tests in scope) o si queremos correr uno en particular, adicionalmente podemos agregar comentarios que van a servir para que las métricas de performance generadas solamente se comparen otra esa descripción utilizada.
+
+![workflow-actions](images/workflow-actions.png)
+
+Una vez que el workflow finaliza el mismo arroja un mensaje a slack, que puede ser de éxito o de error, mostrando distinta información.
+
+![notificacion-slack-error](images/notificacion-slack-error.png)
+
+![notificacion-slack-exito2](images/notificacion-slack-exito2.png)
+
+![notificacion-slack-exito](images/notificacion-slack-exito.png)
+
 ## Métricas de performance a nivel UI
+
+
 
 ### Recomendaciones para armar los casos 🗒
 
