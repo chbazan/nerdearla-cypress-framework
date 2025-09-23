@@ -10,10 +10,11 @@
    - [Repositorio público](#repositorio-público)
    - [GH token](#gh-token)
    - [Slack webhook](#slack-webook)
-4. [Ejecución de las pruebas 🐛](#ejecución-de-las-pruebas-)
-5. [Variables utilizadas ](#variables-utilizadas-️)
-6. [Recomendaciones para armar los casos 🗒](#recomendaciones-para-armar-los-casos-)
-7. [Capacitación de Cypress 🤓](#capacitación-de-cypress-)
+4. [Variables utilizadas 🦾​](#variables-utilizadas-️)
+5. [Ejecución de las pruebas 🐛](#ejecución-de-las-pruebas-)
+6. [Métricas generadas 📊​​](#métricas-generadas)
+7. [Recomendaciones para armar los casos 🗒](#recomendaciones-para-armar-los-casos-)
+8. [Capacitación de Cypress 🤓](#capacitación-de-cypress-)
 
 ## Descripción de las Pruebas 🚀
 
@@ -135,7 +136,7 @@ Para poder integrar las alertas a slack necesitamos configurar el canal y tambi�
 
 ![slack-canal](images/slack-canal.png)
 
-### Variables utilizadas
+### Variables utilizadas 🦾​
 
 Estas variables afectan a todo el test y pueden ser modificadas desde el archivo .env, se deja un archivo .env-example en con las utilizadas.
 
@@ -145,30 +146,29 @@ Estas variables afectan a todo el test y pueden ser modificadas desde el archivo
 
 En el job de gh actions se utilizan:
 
-- ENVIRONMENT=
-- CLIENT=
-- TEST=
-- BROWSER=
-- COMMENTS=
-- PUBLIC_REPO=
-- PRIVATE_REPO=
-- LOCATION=
-- TEST_USER=
-- TEST_PASSWORD=
-- VERSION=
-- ALERT_MSG=
-- FORMATTED_ALERTS=
-- TEST_SUMMARY=
-- SUITE_METRICS=
-- FAILED_TESTS=
-- ERROR_MESSAGES=
-- PASSED_SUITES=
-- STABILITY=
-- SCREENSHOT_FOLDER=
-- SCREENSHOT_NAME=
-- ENCODED_TEST_SUITE=
-- GH_TOKEN=
-- NERDEARLA_SLACK_WEBHOOK=
+- ENVIRONMENT=Ambiente de prueba.
+- CLIENT=Cliente.
+- TEST=Test elegido a correr.
+- BROWSER=Navegador elegido.
+- PUBLIC_REPO=Nombre del repositorio público donde se deployan las métricas y el reporte de cypress.
+- PRIVATE_REPO=Nombre del repositorio privado (o público) donde se van a pushear el histórico de métricas (en este caso en la rama metrics).
+- LOCATION=URL de la aplicación.
+- TEST_USER=Usuario para hacer login, seteado como secret.
+- TEST_PASSWORD=Password para hacer login, seteado como secret.
+- VERSION=Versión del aplicativo (se obtiene con Cypress).
+- ALERT_MSG=Alerta de desvíos en métricas de secciones.
+- STABILITY=Muestra el estado de los últimos 10 runs del workflow.
+- TEST_SUMMARY=Muestra la cantidad de casos testeados y su duración total.
+- SUITE_METRICS=Muestra cada test suite probado con sus respectivos tiempos de duración.
+- COMMENTS=Comentarios para las métricas.
+- FAILED_TESTS=Test (it) puntual que falló.
+- ERROR_MESSAGES=Mensaje de error del test fallado.
+- PASSED_SUITES=Los tests que si pasaron a pesar del error.
+- SCREENSHOT_FOLDER=El directorio donde se guardan los screenshots.
+- SCREENSHOT_NAME=El nombre del screenshot puntual generado.
+- ENCODED_TEST_SUITE=El nombre del test seteado en package.json formateado para que pueda ser usado como link.
+- GH_TOKEN=El token generado de github, seteado como secret.
+- NERDEARLA_SLACK_WEBHOOK=El webhook generado, seteado como secret.
 
 ## Ejecución de las Pruebas 🐛
 
@@ -184,9 +184,29 @@ Una vez que el workflow finaliza el mismo arroja un mensaje a slack, que puede s
 
 ![notificacion-slack-exito](images/notificacion-slack-exito.png)
 
-## Métricas de performance a nivel UI
+## Métricas generadas
 
+Cada corrida va a dejar todas las métricas en un único archivo llamado raw_data.csv que nos sirve como proveedor para generar las distintas métricas que vayamos pensando, ese archivo se nutre de nuestro combined.json que resulta de ejecutar nuestras pruebas en Cypress.
 
+Cada "describe" utilizado va a derivar a una nueva "Sección" y cada "it" a una nueva "Descripción", esto sumado a los distintos valores que seteamos en nuestro workflow van a setear distintas columnas para poder identificar las métricas de performance a nivel UI, pudiendo trackear los tiempos de respuestas de los flujos que creamos en Cypress y con esto tener una idea de la experiencia del usuario en nuestra aplicación.
+
+Utilizando nuestras "métricas crudas" se desprenden 4 archivos .csv, los primeros llamados comparativa_historica_por_descripcion.csv y comparativa_historica_por_seccion.csv
+
+![metricas-descripcion](images/metricas-descripcion.png)
+![metricas-seccion](images/metricas-seccion.png)
+
+Esto nos muestra los tiempos de respuestas (p95) de nuestra última muestra vs los p95 acumulados de todas nuestras muestras anteriores, es decir de todas las veces que ejecutamos nuestro test. Esto fue pensado así para tener una mejor representación de los números obtenidos.
+
+- Por sección: Compara toda la sección (es decir de los tiempos de todos los it dentro del describe) de la última muestra, contra todo el acumulado de la misma versión, evaluando su porcentaje de mejora/empeora de performance. Con esto tenemos una visión general de cómo responde la sección frente a algún cambio que no implique un cambio de versión, por ejemplo agregar volumen a la base de datos o setear nuevas reglas de caché, etc.
+
+- Por descripción: Compara el tiempo de la última muestra de una descripción en particular (it), contra todo el acumulado de la misma versión, evaluando su porcentaje de mejora/empeora de performance. Con esto podemos hacer un “zoom” de los tiempos generales observados por sección para identificar en qué momento en particular hubo una mejora/empeora de performance.
+
+![metricas-comparativas-descripcion](images/metricas-comparativa-version-descripcion.png)
+![metricas-comparativas-seccion](images/metricas-comparativa-version-seccion.png)
+
+La misma lógica explicada anteriormente se utiliza pero para realizar la comparativa contra la versión inmediata anterior, pudiendo medir la mejora/desmejora del performance entre la versión actual medida contra todas las mediciones de la anterior versión, pudiendo verlo de forma general mediante las secciones o de forma particular mediante las descripciones. Con esto si podemos identificar, por ejemplo, si las mejoras de performance de una nueva versión efectivamente funcionan, o si hubo algún impacto de performance cuando alguna funcionalidad fue modificada o agregada.
+
+> **Nota:** La primera muestra de cada versión se va a incluir en el archivo raw_data.csv pero no va a generar el resto de los archivos, para esto se necesita un mínimo de 2 muestras por versión.
 
 ### Recomendaciones para armar los casos 🗒
 
@@ -216,6 +236,10 @@ Una vez que el workflow finaliza el mismo arroja un mensaje a slack, que puede s
 > **Nota:** ¿Que es son los "it" en Cypress?
 > 
 > Representantan los casos de pruebas a realizar.
+
+> **Nota:** ¿Que es son los "describe" en Cypress?
+> 
+> Representanta una agrupación de casos de pruebas (test suite).
 
 > **Nota:** ¿Que es una "precondición"?
 > 
