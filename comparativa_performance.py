@@ -11,8 +11,15 @@ cliente  = os.getenv("CLIENT", "Nerdearla")
 version = os.getenv("VERSION", "2021")
 comentarios = os.getenv("COMMENTS", "")
 
-with open('version.txt', 'r') as version_file:
-    version = version_file.readline().strip()
+# Si existe version.txt se usa ese valor, si no se mantiene el seteado
+try:
+    with open("version.txt", "r") as version_file:
+        version_txt = version_file.readline().strip()
+        if version_txt:
+            version = version_txt
+except FileNotFoundError:
+    # No existe version.txt, se deja el valor que ya se tenía
+    pass
     
 metrics_dir = os.path.join('metrics')
 os.makedirs(metrics_dir, exist_ok=True)
